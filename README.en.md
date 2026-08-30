@@ -10,6 +10,7 @@ A local weather card for the [DeepSeek Harness](https://github.com/deepseek-ai/d
 - **Current conditions**: temperature, condition, feels-like, humidity, and wind in metric units.
 - **City search**: pick a settlement from the Open-Meteo geocoding API to override the location.
 - **Responsive**: a full card in the wide sidebar, a temperature pill on the 56px rail.
+- **Animated backdrop**: the card background is an inline SMIL-animated SVG weather art (from [Meteocons](https://github.com/basmilius/meteocons)) covering 11 weather states — clear, partly cloudy, overcast, fog, drizzle, freezing drizzle, rain, freezing rain, snow, hail, and thunderstorms — each switching its own animation (rotating sun, drifting clouds, falling rain/snow, hail, flashing storm bolt) with zero JS overhead; it auto-pauses under `prefers-reduced-motion`.
 - **Localized**: `zh` and `en` dictionaries through the standard `t` seat.
 
 ## Install

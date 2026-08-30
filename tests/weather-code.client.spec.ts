@@ -1,7 +1,7 @@
 /**
  * ui-weather WMO code mapping: every dictionary key is reachable from the
  * WMO code groups, unknown codes fall back to the overcast label, and each
- * code group maps to its backdrop animation state.
+ * code group maps to its backdrop state.
  */
 import { describe, expect, it } from 'vitest'
 import { weatherBackdrop, weatherCodeKey } from '../src/client/weather-code.ts'
@@ -60,28 +60,52 @@ describe('weatherCodeKey', () => {
 })
 
 describe('weatherBackdrop', () => {
-  it('maps clear-sky codes to sunny', () => {
-    for (const code of [0, 1, 2]) expect(weatherBackdrop(code)).toBe('sunny')
+  it('maps the clear-sky code to sunny', () => {
+    expect(weatherBackdrop(0)).toBe('sunny')
   })
 
-  it('maps overcast and fog to cloudy', () => {
-    for (const code of [3, 45, 48]) expect(weatherBackdrop(code)).toBe('cloudy')
+  it('maps partly cloudy codes to partlyCloudy', () => {
+    for (const code of [1, 2]) expect(weatherBackdrop(code)).toBe('partlyCloudy')
   })
 
-  it('maps drizzle and rain to rain', () => {
-    for (const code of [51, 56, 61, 66, 80, 82]) expect(weatherBackdrop(code)).toBe('rain')
+  it('maps overcast to cloudy', () => {
+    expect(weatherBackdrop(3)).toBe('cloudy')
   })
 
-  it('maps snow and snow showers to snow', () => {
-    for (const code of [71, 77, 85, 86]) expect(weatherBackdrop(code)).toBe('snow')
+  it('maps fog to fog', () => {
+    for (const code of [45, 48]) expect(weatherBackdrop(code)).toBe('fog')
+  })
+
+  it('maps drizzle to drizzle', () => {
+    for (const code of [51, 53, 55]) expect(weatherBackdrop(code)).toBe('drizzle')
+  })
+
+  it('maps freezing drizzle to freezingDrizzle', () => {
+    for (const code of [56, 57]) expect(weatherBackdrop(code)).toBe('freezingDrizzle')
+  })
+
+  it('maps rain to rain', () => {
+    for (const code of [61, 63, 65, 80, 81, 82]) expect(weatherBackdrop(code)).toBe('rain')
+  })
+
+  it('maps freezing rain to freezingRain', () => {
+    for (const code of [66, 67]) expect(weatherBackdrop(code)).toBe('freezingRain')
+  })
+
+  it('maps snow to snow', () => {
+    for (const code of [71, 73, 75, 77, 85, 86]) expect(weatherBackdrop(code)).toBe('snow')
   })
 
   it('maps thunderstorms to storm', () => {
-    for (const code of [95, 96, 99]) expect(weatherBackdrop(code)).toBe('storm')
+    expect(weatherBackdrop(95)).toBe('storm')
   })
 
-  it('falls back to storm for unknown codes', () => {
-    expect(weatherBackdrop(-1)).toBe('storm')
-    expect(weatherBackdrop(100)).toBe('storm')
+  it('maps thunderstorms with hail to hail', () => {
+    for (const code of [96, 99]) expect(weatherBackdrop(code)).toBe('hail')
+  })
+
+  it('falls back to cloudy for unknown codes', () => {
+    expect(weatherBackdrop(-1)).toBe('cloudy')
+    expect(weatherBackdrop(100)).toBe('cloudy')
   })
 })

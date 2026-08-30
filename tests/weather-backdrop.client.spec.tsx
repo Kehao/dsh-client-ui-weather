@@ -1,33 +1,85 @@
 // @vitest-environment jsdom
 /**
- * WeatherBackdrop: renders the decorative layers keyed by data-state, is
- * aria-hidden and pointer-transparent, and exposes the animation state the
- * card content stacks above.
+ * WeatherBackdrop: renders the SMIL-animated Meteocons SVG keyed by state,
+ * is decorative (aria-hidden), never intercepts pointer events, and the art
+ * table covers every backdrop state.
  */
-import { cleanup, render } from '@testing-library/react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { describe, expect, it, vi, afterEach } from 'vitest'
+import { render } from '@testing-library/react'
 import { WeatherBackdrop } from '../src/client/WeatherBackdrop.tsx'
-
-afterEach(cleanup)
+import { WEATHER_ART } from '../src/client/weather-art.ts'
 
 describe('WeatherBackdrop', () => {
-  it('renders the backdrop with the given data-state', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+    const proto = SVGElement.prototype as unknown as Record<string, unknown>
+    delete proto.pauseAnimations
+    delete proto.unpauseAnimations
+  })
+
+  it('renders an svg for the given state', () => {
     const { container } = render(<WeatherBackdrop state="rain" />)
-    const backdrop = container.querySelector('[data-state="rain"]')
-    expect(backdrop).toBeTruthy()
+    const svg = container.querySelector('svg')
+    expect(svg).not.toBeNull()
+    // The rain art contains the falling-drop SMIL animation.
+    expect(svg?.innerHTML).toContain('animateTransform')
   })
 
-  it('is hidden from assistive technology', () => {
+  it('is decorative and inert', () => {
     const { container } = render(<WeatherBackdrop state="sunny" />)
-    expect(container.querySelector('[aria-hidden="true"]')).toBeTruthy()
+    const backdrop = container.firstElementChild
+    expect(backdrop?.getAttribute('aria-hidden')).toBe('true')
   })
 
-  it('renders all decorative layers for every state', () => {
-    for (const state of ['sunny', 'cloudy', 'rain', 'snow', 'storm'] as const) {
-      const { container } = render(<WeatherBackdrop state={state} />)
-      // sun, clouds, precipitation, lightning layers always exist; the state
-      // class selects which are visible.
-      expect(container.querySelectorAll('div').length).toBeGreaterThanOrEqual(6)
+  it('every backdrop state has art', () => {
+    for (const state of ['sunny', 'partlyCloudy', 'cloudy', 'fog', 'drizzle', 'freezingDrizzle', 'rain', 'freezingRain', 'snow', 'hail', 'storm'] as const) {
+      expect(WEATHER_ART[state]).toContain('<svg')
     }
+  })
+
+  it('pauses SMIL animations under prefers-reduced-motion', () => {
+    const pause = vi.fn()
+    const unpause = vi.fn()
+    const proto = SVGElement.prototype as unknown as Record<string, unknown>
+    proto.pauseAnimations = pause
+    proto.unpauseAnimations = unpause
+    const mql = {
+      matches: true,
+      media: '(prefers-reduced-motion: reduce)',
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    } as unknown as MediaQueryList
+    vi.stubGlobal('matchMedia', vi.fn(() => mql))
+    render(<WeatherBackdrop state="rain" />)
+    expect(pause).toHaveBeenCalled()
+    expect(unpause).not.toHaveBeenCalled()
+    vi.unstubAllGlobals()
+  })
+
+  it('plays SMIL animations when motion is allowed', () => {
+    const pause = vi.fn()
+    const unpause = vi.fn()
+    const proto = SVGElement.prototype as unknown as Record<string, unknown>
+    proto.pauseAnimations = pause
+    proto.unpauseAnimations = unpause
+    const mql = {
+      matches: false,
+      media: '(prefers-reduced-motion: reduce)',
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    } as unknown as MediaQueryList
+    vi.stubGlobal('matchMedia', vi.fn(() => mql))
+    render(<WeatherBackdrop state="rain" />)
+    expect(unpause).toHaveBeenCalled()
+    expect(pause).not.toHaveBeenCalled()
+    vi.unstubAllGlobals()
   })
 })

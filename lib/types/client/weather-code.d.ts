@@ -10,11 +10,11 @@ import type { WeatherKey } from './locales.ts';
  * @returns the dictionary key whose value describes that condition.
  */
 export declare function weatherCodeKey(code: number): WeatherKey;
-/** Backdrop animation state derived from a WMO code. */
-export type WeatherBackdrop = 'sunny' | 'cloudy' | 'rain' | 'snow' | 'storm';
+/** Backdrop state derived from a WMO code, mapped to meteocons art. */
+export type WeatherBackdrop = 'sunny' | 'partlyCloudy' | 'cloudy' | 'fog' | 'drizzle' | 'freezingDrizzle' | 'rain' | 'freezingRain' | 'snow' | 'hail' | 'storm';
 /**
- * Map a WMO weather interpretation code to its backdrop animation state.
+ * Map a WMO weather interpretation code to its backdrop state.
  * @param code - the WMO code reported by Open-Meteo.
- * @returns the animation state for the card background.
+ * @returns the backdrop state used to pick the animated SVG art.
  */
 export declare function weatherBackdrop(code: number): WeatherBackdrop;

@@ -1,34 +1,46 @@
+import { useEffect, useRef } from 'react'
 import type { WeatherBackdrop } from './weather-code.ts'
+import { WEATHER_ART } from './weather-art.ts'
 import css from './WeatherBackdrop.module.css'
 
 /** Props for the animated weather backdrop. */
 export interface WeatherBackdropProps {
-  /** Backdrop animation state derived from the WMO code. */
+  /** Backdrop state derived from the WMO code. */
   state: WeatherBackdrop
 }
 
 /**
- * Animated weather backdrop behind the card content. Pure CSS, no canvas or
- * WebGL: rain streaks and snowflakes fall through repeating background
- * gradients, a clear sky shows a rotating sun with light rays, and a storm
- * adds a periodic lightning flash. Layers are decorative (aria-hidden) and
- * never intercept pointer events; the reduced-motion media query freezes all
- * animation.
+ * Animated weather backdrop behind the card content. The art is an inline
+ * SMIL-animated SVG (from Meteocons), so it animates with zero JS: the sun
+ * rays rotate, clouds drift, raindrops and snowflakes fall, and the storm
+ * bolt flashes. Injected via dangerouslySetInnerHTML because the markup is a
+ * trusted, build-time constant from this package. Decorative (aria-hidden)
+ * and never intercepts pointer events. Under prefers-reduced-motion the SMIL
+ * timeline is paused via the native SVG pauseAnimations() API.
  */
 export function WeatherBackdrop({ state }: WeatherBackdropProps) {
+  const hostRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const svg = hostRef.current?.querySelector('svg')
+    if (!svg) return
+    const reduce = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false
+    if (reduce) {
+      svg.pauseAnimations?.()
+    } else {
+      svg.unpauseAnimations?.()
+    }
+  }, [state])
+
   return (
-    <div className={css.backdrop} data-state={state} aria-hidden="true">
-      <div className={css.sun}>
-        <div className={css.sunCore} />
-        <div className={css.sunRays} />
-      </div>
-      <div className={css.clouds}>
-        <div className={css.cloud} />
-        <div className={css.cloud} />
-        <div className={css.cloud} />
-      </div>
-      <div className={css.precipitation} />
-      <div className={css.lightning} />
-    </div>
+    <div
+      ref={hostRef}
+      className={css.backdrop}
+      data-state={state}
+      aria-hidden="true"
+      dangerouslySetInnerHTML={{ __html: WEATHER_ART[state] }}
+    />
   )
 }

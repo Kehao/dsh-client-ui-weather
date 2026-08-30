@@ -40,10 +40,10 @@
   color: var(--dsw-alias-label-secondary);
 }
 
-/* In the sunny backdrop the sun sits at the top-left; keep the location
+/* In the sunny backdrop the sun sits at the top-right; keep the location
    name clear of it. */
 .placeWithSun {
-  padding-left: 48px;
+  padding-right: 72px;
 }
 
 /* Loading placeholder for the location name: keeps the header height stable

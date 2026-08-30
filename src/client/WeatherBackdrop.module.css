@@ -1,221 +1,44 @@
-/* Animated weather backdrop: pure CSS layers keyed by data-state.
-   Decor only — never intercepts pointer events, frozen under
-   prefers-reduced-motion. Particle colors are theme-aware custom
-   properties: dark tints on the light surface, light tints on the dark
-   surface, so every state reads on both themes. */
+/* Animated weather backdrop: an inline SMIL-animated Meteocons SVG behind
+   the card content. Decor only — never intercepts pointer events. The SVG
+   is 128x128 and scaled up; opacity keeps it a soft background layer on
+   both themes, with a gradient fade so the text stays readable. */
 
-/* Light theme: near-white card, so particles are dark tints. */
 .backdrop {
-  --backdrop-sun: rgba(255, 176, 59, 0.85);
-  --backdrop-sun-glow: rgba(255, 190, 90, 0.55);
-  --backdrop-sun-ray: rgba(214, 158, 46, 0.55);
-  --backdrop-cloud: rgba(96, 116, 142, 0.4);
-  --backdrop-rain: rgba(84, 116, 156, 0.5);
-  --backdrop-rain-bright: rgba(66, 98, 138, 0.65);
-  --backdrop-snow: rgba(148, 170, 196, 0.85);
-  --backdrop-snow-soft: rgba(120, 148, 180, 0.7);
-  --backdrop-flash: rgba(60, 90, 140, 0.85);
   position: absolute;
   inset: 0;
   overflow: hidden;
   border-radius: inherit;
   pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
 }
 
-/* Dark theme: near-black card, so particles are light tints. */
-body[data-ds-dark-theme] .backdrop {
-  --backdrop-sun: rgba(255, 214, 120, 0.95);
-  --backdrop-sun-glow: rgba(255, 190, 90, 0.55);
-  --backdrop-sun-ray: rgba(255, 210, 120, 0.5);
-  --backdrop-cloud: rgba(160, 180, 205, 0.45);
-  --backdrop-rain: rgba(190, 215, 240, 0.5);
-  --backdrop-rain-bright: rgba(200, 225, 250, 0.65);
-  --backdrop-snow: rgba(235, 245, 255, 0.9);
-  --backdrop-snow-soft: rgba(240, 248, 255, 0.75);
-  --backdrop-flash: rgba(220, 235, 255, 0.85);
-}
-
-/* ── sun (sunny state) ─────────────────────────────────────────────── */
-
-.sun {
+/* The injected SVG fills the backdrop area, anchored to the top-right so
+   the card head stays clear on the left. */
+.backdrop :global(svg) {
   position: absolute;
-  top: 10px;
-  left: 12px;
-  width: 40px;
-  height: 40px;
-  opacity: 0;
-  transition: opacity 0.7s ease;
+  top: -18px;
+  right: -22px;
+  width: 168px;
+  height: 168px;
+  display: block;
 }
 
-[data-state='sunny'] .sun {
-  opacity: 1;
-}
-
-.sunCore {
-  position: absolute;
-  inset: 8px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 35% 35%,
-    var(--backdrop-sun),
-    var(--backdrop-sun) 65%,
-    rgba(255, 154, 43, 0.7)
-  );
-  box-shadow: 0 0 18px var(--backdrop-sun-glow);
-}
-
-.sunRays {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: repeating-conic-gradient(
-    from 0deg,
-    var(--backdrop-sun-ray) 0deg 10deg,
-    transparent 10deg 30deg
-  );
-  mask-image: radial-gradient(circle, transparent 42%, #000 46%);
-  animation: sun-rotate 18s linear infinite;
-}
-
-@keyframes sun-rotate {
-  to { transform: rotate(360deg); }
-}
-
-/* ── drifting clouds (cloudy state) ────────────────────────────────── */
-
-.clouds {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.7s ease;
-}
-
-[data-state='cloudy'] .clouds {
-  opacity: 1;
-}
-
-.cloud {
-  position: absolute;
-  width: 56px;
-  height: 18px;
-  border-radius: 999px;
-  background: var(--backdrop-cloud);
-  filter: blur(1px);
-  animation: cloud-drift linear infinite;
-}
-
-.cloud::before,
-.cloud::after {
+/* Fade the far edge so the icon melts into the card surface. */
+.backdrop::after {
   content: '';
   position: absolute;
-  border-radius: 50%;
-  background: inherit;
-}
-
-.cloud::before {
-  width: 24px;
-  height: 24px;
-  left: 10px;
-  top: -12px;
-}
-
-.cloud::after {
-  width: 18px;
-  height: 18px;
-  right: 12px;
-  top: -8px;
-}
-
-.cloud:nth-child(1) {
-  top: 6px;
-  left: -60px;
-  animation-duration: 26s;
-}
-
-.cloud:nth-child(2) {
-  top: 26px;
-  left: -90px;
-  transform: scale(0.7);
-  animation-duration: 34s;
-  animation-delay: -12s;
-}
-
-.cloud:nth-child(3) {
-  top: 44px;
-  left: -70px;
-  transform: scale(0.5);
-  animation-duration: 42s;
-  animation-delay: -24s;
-}
-
-@keyframes cloud-drift {
-  to { transform: translateX(340px); }
-}
-
-/* ── precipitation: repeating-gradient fall (rain / snow) ─────────── */
-
-.precipitation {
-  position: absolute;
-  inset: -30%;
-  opacity: 0;
-  transition: opacity 0.7s ease;
-}
-
-[data-state='rain'] .precipitation {
-  opacity: 1;
-  background-image:
-    radial-gradient(0.8px 8px at 50% 0%, var(--backdrop-rain), transparent 80%),
-    radial-gradient(1px 11px at 50% 0%, var(--backdrop-rain-bright), transparent 80%);
-  background-size: 30px 46px, 40px 58px;
-  transform: skewX(-12deg);
-  animation: rain-fall 0.55s linear infinite;
-}
-
-[data-state='snow'] .precipitation {
-  opacity: 1;
-  background-image:
-    radial-gradient(2px 2px at 50% 50%, var(--backdrop-snow), transparent 60%),
-    radial-gradient(2.5px 2.5px at 50% 50%, var(--backdrop-snow-soft), transparent 60%);
-  background-size: 64px 92px, 86px 120px;
-  animation: snow-fall 5s linear infinite;
-}
-
-@keyframes rain-fall {
-  to { background-position: 0 46px, 0 58px; }
-}
-
-@keyframes snow-fall {
-  to { background-position: 6px 92px, -8px 120px; }
-}
-
-/* ── storm flash ───────────────────────────────────────────────────── */
-
-.lightning {
-  position: absolute;
   inset: 0;
-  opacity: 0;
-  background: var(--backdrop-flash);
+  background: linear-gradient(
+    135deg,
+    var(--dsw-alias-bg-layer-2) 0%,
+    transparent 55%
+  );
   pointer-events: none;
 }
 
-[data-state='storm'] .lightning {
-  animation: storm-flash 4.5s ease-in-out infinite;
-}
-
-@keyframes storm-flash {
-  0%, 82%, 90%, 100% { opacity: 0; }
-  84%, 88% { opacity: 0.5; }
-  86% { opacity: 0.9; }
-}
-
-/* ── reduced motion: freeze all animation, keep a static tint ─────── */
-
-@media (prefers-reduced-motion: reduce) {
-  .sunRays,
-  .cloud,
-  [data-state='rain'] .precipitation,
-  [data-state='snow'] .precipitation,
-  [data-state='storm'] .lightning {
-    animation: none !important;
-  }
+/* Dark theme: the bright Meteocons fill palette pops harder on a near-black
+   card, so pull the whole layer back a bit. */
+body[data-ds-dark-theme] .backdrop {
+  opacity: 0.4;
 }
