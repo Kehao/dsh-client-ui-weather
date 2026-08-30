@@ -14,7 +14,7 @@
 
 ## 安装
 
-本包是独立、自包含的 npm 包（`lib/` 由 `prepare` 脚本生成，因此从 git 安装开箱即用）。从 git 主机或本地检出安装：
+本包是独立、自包含的 npm 包，构建产物 `lib/` 已提交到仓库，因此从 git 安装开箱即用，**无需任何构建权限**。从 git 主机或本地检出安装：
 
 ```sh
 # 从 git 主机（固定 commit，避免后续推送静默改变所运行的代码）
@@ -28,6 +28,8 @@ pnpm pack
 dsh plugin --profile demo add ./dsh-client-ui-weather-0.1.0.tgz
 ```
 
+本包不声明 `prepare` 脚本，因此 pnpm 直接安装仓库中已提交的 `lib/` 产物，永远不会请求构建脚本许可。
+
 ### 启用浏览器界面
 
 本包是 *client* 插件（`dsh.client` 声明），而非 `dsh.bundle` 配置层，所以 `dsh plugin add` 只安装依赖、不会自行激活配置层。需要在 profile 的 `cordis.patch.yml`（或 `--patch` overlay）中添加一行来加载它：
@@ -38,15 +40,6 @@ dsh plugin --profile demo add ./dsh-client-ui-weather-0.1.0.tgz
 ```
 
 dsh web 的 client-modules 扫描器会拾取任何声明了 `dsh.client` 的已加载条目，因此下次启动 `dsh web` 时，天气卡片会出现在侧边栏底部（设置按钮上方）。
-
-> **git 安装与构建脚本**：pnpm ≥10 在显式允许之前会拒绝运行 git 依赖的 `prepare` 脚本。如果第一次 `add` 失败，把 pnpm 打印的确切包 key 复制到 profile 的 `pnpm-workspace.yaml`：
->
-> ```yaml
-> allowBuilds:
->   dsh-client-ui-weather: true
-> ```
->
-> 然后重新执行 `add`。请把该许可视为在安装时执行该包代码的授权。如果不想这样做，可以改用打包的 tarball —— 它自带构建产物，无需构建权限。
 
 ## 数据来源
 
