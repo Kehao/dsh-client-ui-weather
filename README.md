@@ -65,6 +65,24 @@ pnpm run typecheck
 
 浏览器 bundle 以 dsh client-modules wire 格式输出（`window.__ModuleLoader__.load({ id, factory })`），CSS Modules 编译为哈希类名映射并注入 style 标签；平台模块（`react`、cordis、slots 等）保持外部依赖，由宿主 shell 解析。
 
+### UI 调试（React + Vite）
+
+`dev/` 目录提供了一个独立的 Vite + React 调试台，在浏览器中直接渲染真实的 `WeatherWidget`，无需 dsh 宿主：
+
+```sh
+pnpm dev          # 启动 http://localhost:5173
+pnpm run dev:build  # 生产构建检查
+```
+
+调试台控制面板支持：
+
+- **场景切换**：晴天北京 / 雨天上海 / 雪天哈尔滨（mock 定位与天气数据，无网络请求）
+- **宽度切换**：宽栏卡片与 56px 窄栏温度胶囊
+- **语言切换**：中文 / English（复用真实 locale 字典）
+- **错误模式**：定位失败 / 天气获取失败，验证错误态与重试
+
+mock 数据位于 `dev/mock.ts`，注入面与真实插件一致（`resolveLocation` / `fetchWeather` / `searchCity`），组件代码零改动即可调试。
+
 ## 模型体验
 
 无，天气卡片是浏览器端 UI 插件层，不注册任何模型可见内容。

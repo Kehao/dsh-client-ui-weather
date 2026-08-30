@@ -65,6 +65,24 @@ pnpm run typecheck
 
 The browser bundle is emitted in the dsh client-modules wire format (`window.__ModuleLoader__.load({ id, factory })`) with CSS Modules compiled to hashed class maps plus an injected style tag; platform modules (`react`, cordis, slots, …) stay external and resolve from the host shell.
 
+### UI debugging (React + Vite)
+
+The `dev/` directory ships a standalone Vite + React playground that renders the real `WeatherWidget` in the browser — no dsh host required:
+
+```sh
+pnpm dev          # start http://localhost:5173
+pnpm run dev:build  # production build check
+```
+
+The control panel offers:
+
+- **Scenario switching**: sunny Beijing / rainy Shanghai / snowy Harbin (stubbed location and weather, no network calls)
+- **Width switching**: full card vs the 56px rail temperature pill
+- **Language switching**: Chinese / English (reuses the real locale dictionaries)
+- **Error modes**: location failure / weather failure, to verify the error state and retry
+
+Mock data lives in `dev/mock.ts` with the same inject face as the real plugin (`resolveLocation` / `fetchWeather` / `searchCity`); the component code is untouched.
+
 ## Model Experience
 
 None, as the weather card is a browser-side UI plugin layer that registers nothing model-facing.
