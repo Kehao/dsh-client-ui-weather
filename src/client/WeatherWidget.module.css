@@ -220,13 +220,15 @@
   line-height: 20px;
 }
 
-/* Shared dropdown for both the popular-city shortcuts and live results. */
+/* Shared dropdown for both the popular-city shortcuts and live results.
+   Anchored ABOVE the input: the card sits at the sidebar foot, so a
+   downward popup would run off the bottom edge. */
 .popup {
   position: absolute;
   z-index: 10;
   left: 0;
   right: 0;
-  top: calc(100% + 2px);
+  bottom: calc(100% + 2px);
   margin: 0;
   padding: 6px;
   border-radius: 6px;
