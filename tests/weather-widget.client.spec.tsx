@@ -98,7 +98,8 @@ describe('WeatherWidget', () => {
     expect(view.getByText('天气获取失败')).toBeTruthy()
   })
 
-  it('searches a city and switches the location on selection', async () => {
+  it('searches a city live on input and switches the location on selection', async () => {
+    vi.useFakeTimers()
     const searchCity = vi.fn().mockResolvedValue([
       { id: 1, name: '上海市', admin1: '上海市', country: '中国', latitude: 31.23, longitude: 121.47 },
     ])
@@ -108,8 +109,7 @@ describe('WeatherWidget', () => {
 
     const input = view.getByRole('textbox', { name: '搜索城市' })
     fireEvent.change(input, { target: { value: '上海' } })
-    fireEvent.keyDown(input, { key: 'Enter' })
-    await act(async () => { await Promise.resolve() })
+    await act(async () => { await vi.advanceTimersByTimeAsync(300) })
 
     expect(searchCity).toHaveBeenCalledWith('上海')
     const match = view.getByRole('button', { name: '上海市 · 上海市 · 中国' })
@@ -120,9 +120,11 @@ describe('WeatherWidget', () => {
       latitude: 31.23, longitude: 121.47, name: '上海市',
     })
     expect(view.getByText('上海市')).toBeTruthy()
+    vi.useRealTimers()
   })
 
   it('reports when the search has no matches', async () => {
+    vi.useFakeTimers()
     const view = render(<WeatherWidget {...props({
       searchCity: vi.fn().mockResolvedValue([]),
     })} />)
@@ -130,27 +132,60 @@ describe('WeatherWidget', () => {
 
     const input = view.getByRole('textbox', { name: '搜索城市' })
     fireEvent.change(input, { target: { value: 'Atlantis' } })
-    fireEvent.keyDown(input, { key: 'Enter' })
-    await act(async () => { await Promise.resolve() })
+    await act(async () => { await vi.advanceTimersByTimeAsync(300) })
     expect(view.getByText('未找到匹配的城市')).toBeTruthy()
+    vi.useRealTimers()
   })
 
-  it('clears stale matches when the query changes', async () => {
-    const view = render(<WeatherWidget {...props({
-      searchCity: vi.fn().mockResolvedValue([
+  it('replaces stale matches when the query changes', async () => {
+    vi.useFakeTimers()
+    const searchCity = vi.fn()
+      .mockResolvedValueOnce([
         { id: 1, name: '上海市', latitude: 31.23, longitude: 121.47 },
-      ]),
-    })} />)
+      ])
+      .mockResolvedValueOnce([
+        { id: 2, name: '北京市', latitude: 39.9, longitude: 116.4 },
+      ])
+    const view = render(<WeatherWidget {...props({ searchCity })} />)
     await act(async () => { await Promise.resolve() })
 
     const input = view.getByRole('textbox', { name: '搜索城市' })
     fireEvent.change(input, { target: { value: '上海' } })
-    fireEvent.keyDown(input, { key: 'Enter' })
-    await act(async () => { await Promise.resolve() })
+    await act(async () => { await vi.advanceTimersByTimeAsync(300) })
     expect(view.getByRole('button', { name: '上海市' })).toBeTruthy()
 
+    // The old match stays visible during the debounce window, then the new
+    // query replaces it once the debounced search resolves.
     fireEvent.change(input, { target: { value: '北' } })
+    await act(async () => { await vi.advanceTimersByTimeAsync(300) })
     expect(view.queryByRole('button', { name: '上海市' })).toBeNull()
+    expect(view.getByRole('button', { name: '北京市' })).toBeTruthy()
+    vi.useRealTimers()
+  })
+
+  it('shows popular city shortcuts when the input is empty and focused', () => {
+    const view = render(<WeatherWidget {...props()} />)
+    const input = view.getByRole('textbox', { name: '搜索城市' })
+    fireEvent.focus(input)
+    expect(view.getByText('常用城市')).toBeTruthy()
+    expect(view.getByRole('button', { name: '北京' })).toBeTruthy()
+    expect(view.getByRole('button', { name: '上海' })).toBeTruthy()
+  })
+
+  it('switches to a popular city on chip click', async () => {
+    const fetchWeather = vi.fn().mockResolvedValue(sunny)
+    const view = render(<WeatherWidget {...props({ fetchWeather })} />)
+    await act(async () => { await Promise.resolve() })
+
+    const input = view.getByRole('textbox', { name: '搜索城市' })
+    fireEvent.focus(input)
+    const chip = view.getByRole('button', { name: '北京' })
+    fireEvent.click(chip)
+    await act(async () => { await Promise.resolve() })
+
+    expect(fetchWeather).toHaveBeenLastCalledWith({
+      latitude: 39.9075, longitude: 116.39723, name: '北京',
+    })
   })
 
   it('handles a search failure as no matches', async () => {

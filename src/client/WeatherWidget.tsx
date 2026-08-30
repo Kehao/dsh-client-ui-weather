@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import type { CurrentWeather, CityResult, WeatherLocation } from './weather-api.ts'
+import { POPULAR_CITIES } from './weather-api.ts'
 import { weatherBackdrop, weatherCodeKey } from './weather-code.ts'
 import type { WeatherKey } from './locales.ts'
 import { RefreshIcon, WarningIcon } from './icons.tsx'
@@ -39,6 +40,9 @@ export function WeatherWidget({ wide, t, resolveLocation, fetchWeather, searchCi
   const [query, setQuery] = useState('')
   const [matches, setMatches] = useState<CityResult[]>([])
   const [searching, setSearching] = useState(false)
+  const [open, setOpen] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+  const debounceRef = useRef<number | undefined>(undefined)
 
   // The injected callbacks are stable for the entry lifetime; run the
   // auto-locate chain once on mount and on every explicit refresh.
@@ -61,9 +65,45 @@ export function WeatherWidget({ wide, t, resolveLocation, fetchWeather, searchCi
 
   useEffect(() => { void autoLocate() }, [autoLocate])
 
+  // Close the popup when a click lands outside the search block.
+  useEffect(() => {
+    const onPointerDown = (event: PointerEvent): void => {
+      if (!searchRef.current?.contains(event.target as Node)) setOpen(false)
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => document.removeEventListener('pointerdown', onPointerDown)
+  }, [])
+
+  // Debounced live search: every keystroke re-queries, no Enter needed.
+  const runSearch = useCallback(async (term: string): Promise<void> => {
+    const trimmed = term.trim()
+    if (trimmed.length === 0) {
+      setMatches([])
+      return
+    }
+    setSearching(true)
+    try {
+      setMatches(await searchCity(trimmed))
+    } catch {
+      setMatches([])
+    } finally {
+      setSearching(false)
+    }
+  }, [searchCity])
+
+  const handleInput = (value: string): void => {
+    setQuery(value)
+    setOpen(true)
+    window.clearTimeout(debounceRef.current)
+    debounceRef.current = window.setTimeout(() => { void runSearch(value) }, 300)
+  }
+
+  useEffect(() => () => window.clearTimeout(debounceRef.current), [])
+
   const selectCity = async (city: CityResult): Promise<void> => {
     setQuery('')
     setMatches([])
+    setOpen(false)
     setState({ status: 'locating' })
     try {
       const location = { latitude: city.latitude, longitude: city.longitude, name: city.name }
@@ -71,19 +111,6 @@ export function WeatherWidget({ wide, t, resolveLocation, fetchWeather, searchCi
       setState({ status: 'ready', location, weather })
     } catch {
       setState({ status: 'error', message: 'error.weather' })
-    }
-  }
-
-  const runSearch = async (): Promise<void> => {
-    const term = query.trim()
-    if (term.length === 0) return
-    setSearching(true)
-    try {
-      setMatches(await searchCity(term))
-    } catch {
-      setMatches([])
-    } finally {
-      setSearching(false)
     }
   }
 
@@ -164,34 +191,57 @@ export function WeatherWidget({ wide, t, resolveLocation, fetchWeather, searchCi
           </div>
         )}
 
-        <div className={css.search}>
+        <div className={css.search} ref={searchRef}>
           <input
             className={css.searchInput}
             value={query}
             placeholder={t('search.placeholder')}
             aria-label={t('search.placeholder')}
-            onChange={(event) => { setQuery(event.target.value); setMatches([]) }}
-            onKeyDown={(event) => { if (event.key === 'Enter') void runSearch() }}
+            onFocus={() => setOpen(true)}
+            onChange={(event) => { handleInput(event.target.value) }}
+            onKeyDown={(event) => { if (event.key === 'Enter') void runSearch(query) }}
           />
-          {searching && <span className={css.searching}>{t('locating')}</span>}
-          {!searching && matches.length > 0 && (
-            <ul className={css.matches}>
-              {matches.map(city => (
-                <li key={city.id}>
-                  <button
-                    type="button"
-                    className={css.match}
-                    onClick={() => { void selectCity(city) }}
-                  >
-                    {city.name}{city.admin1 !== undefined ? ` · ${city.admin1}` : ''}
-                    {city.country !== undefined ? ` · ${city.country}` : ''}
-                  </button>
-                </li>
-              ))}
-            </ul>
+          {open && query.trim().length === 0 && (
+            <div className={css.popup}>
+              <div className={css.popupTitle}>{t('search.popular')}</div>
+              <ul className={css.popular}>
+                {POPULAR_CITIES.map(city => (
+                  <li key={city.id}>
+                    <button
+                      type="button"
+                      className={css.popularChip}
+                      onClick={() => { void selectCity(city) }}
+                    >
+                      {city.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
-          {!searching && matches.length === 0 && query.trim().length > 0 && (
-            <div className={css.noMatches}>{t('search.empty')}</div>
+          {open && query.trim().length > 0 && (
+            <div className={css.popup}>
+              {searching && <div className={css.searching}>{t('locating')}</div>}
+              {!searching && matches.length > 0 && (
+                <ul className={css.matches}>
+                  {matches.map(city => (
+                    <li key={city.id}>
+                      <button
+                        type="button"
+                        className={css.match}
+                        onClick={() => { void selectCity(city) }}
+                      >
+                        {city.name}{city.admin1 !== undefined ? ` · ${city.admin1}` : ''}
+                        {city.country !== undefined ? ` · ${city.country}` : ''}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {!searching && matches.length === 0 && (
+                <div className={css.noMatches}>{t('search.empty')}</div>
+              )}
+            </div>
           )}
         </div>
       </div>

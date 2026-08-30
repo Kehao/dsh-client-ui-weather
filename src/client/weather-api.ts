@@ -54,6 +54,20 @@ export class LocationUnavailableError extends Error {}
 /** Thrown when the weather or geocoding API request fails. */
 export class WeatherApiError extends Error {}
 
+/** Shortcut cities offered in the search popup so users can switch without typing. */
+export const POPULAR_CITIES: readonly CityResult[] = [
+  { id: 1816670, name: '北京', admin1: '北京', country: '中国', latitude: 39.9075, longitude: 116.39723 },
+  { id: 1796236, name: '上海', admin1: '上海', country: '中国', latitude: 31.2304, longitude: 121.4737 },
+  { id: 1809858, name: '广州', admin1: '广东', country: '中国', latitude: 23.1291, longitude: 113.2644 },
+  { id: 1795565, name: '深圳', admin1: '广东', country: '中国', latitude: 22.5431, longitude: 114.0579 },
+  { id: 1808926, name: '杭州', admin1: '浙江', country: '中国', latitude: 30.2741, longitude: 120.1551 },
+  { id: 1815286, name: '成都', admin1: '四川', country: '中国', latitude: 30.5728, longitude: 104.0668 },
+  { id: 1814905, name: '重庆', admin1: '重庆', country: '中国', latitude: 29.5628, longitude: 106.5528 },
+  { id: 1797929, name: '武汉', admin1: '湖北', country: '中国', latitude: 30.5928, longitude: 114.3055 },
+  { id: 1799962, name: '南京', admin1: '江苏', country: '中国', latitude: 32.0603, longitude: 118.7969 },
+  { id: 1806260, name: '西安', admin1: '陕西', country: '中国', latitude: 34.3416, longitude: 108.9398 },
+]
+
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
 const GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search'
 const REVERSE_GEOCODE_URL = 'https://api.bigdatacloud.net/data/reverse-geocode-client'

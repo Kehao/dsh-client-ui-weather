@@ -50,6 +50,8 @@ export declare class LocationUnavailableError extends Error {
 /** Thrown when the weather or geocoding API request fails. */
 export declare class WeatherApiError extends Error {
 }
+/** Shortcut cities offered in the search popup so users can switch without typing. */
+export declare const POPULAR_CITIES: readonly CityResult[];
 /**
  * Fetch current conditions for a coordinate pair from Open-Meteo.
  * @param latitude - WGS84 latitude in degrees.

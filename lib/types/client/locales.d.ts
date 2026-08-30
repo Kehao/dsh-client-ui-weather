@@ -10,6 +10,8 @@ export declare const zh: {
     refresh: string;
     'search.placeholder': string;
     'search.empty': string;
+    'search.popular': string;
+    'search.hint': string;
     feelsLike: string;
     humidity: string;
     wind: string;
