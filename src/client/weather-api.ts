@@ -63,8 +63,6 @@ export const POPULAR_CITIES: readonly CityResult[] = [
   { id: 1808926, name: '杭州', admin1: '浙江', country: '中国', latitude: 30.2741, longitude: 120.1551 },
   { id: 1815286, name: '成都', admin1: '四川', country: '中国', latitude: 30.5728, longitude: 104.0668 },
   { id: 1814905, name: '重庆', admin1: '重庆', country: '中国', latitude: 29.5628, longitude: 106.5528 },
-  { id: 1797929, name: '武汉', admin1: '湖北', country: '中国', latitude: 30.5928, longitude: 114.3055 },
-  { id: 1799962, name: '南京', admin1: '江苏', country: '中国', latitude: 32.0603, longitude: 118.7969 },
   { id: 1806260, name: '西安', admin1: '陕西', country: '中国', latitude: 34.3416, longitude: 108.9398 },
 ]
 
