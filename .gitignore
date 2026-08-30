@@ -1,0 +1,5 @@
+# Built output is committed so git installs ship working bundles without a
+# build step; dev toolchain and caches stay out of the repository.
+node_modules/
+*.tgz
+.DS_Store

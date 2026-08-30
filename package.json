@@ -1,0 +1,63 @@
+{
+  "name": "dsh-client-ui-weather",
+  "description": "Local weather card for the dsh Web sidebar: browser geolocation with IP fallback, current conditions, and a manual city search over the keyless Open-Meteo API",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./invariant": {
+      "types": "./lib/types/invariant.d.ts",
+      "default": "./lib/invariant.js"
+    },
+    "./client": {
+      "types": "./lib/types/client/index.d.ts",
+      "default": "./lib/client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "build": "node build/build.mjs",
+    "prepare": "node build/build.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false -p tsconfig.json"
+  },
+  "license": "MIT",
+  "dependencies": {},
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.0",
+    "react": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "^4.0.0",
+    "@deepseek-ai/dsh-invariants": "*",
+    "@testing-library/react": "^14.0.0",
+    "@types/react": "^18.3.0",
+    "esbuild": "^0.25.0",
+    "jsdom": "^25.0.0",
+    "react": "18.3.1",
+    "typescript": "^5.5.0",
+    "vitest": "^4.0.0",
+    "react-dom": "18.3.1"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/invariant.js",
+    "lib/client.js",
+    "lib/types/**/*.d.ts"
+  ]
+}

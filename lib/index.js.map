@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["/** Host loader entry for the browser-only weather plugin. */\n\n/** Provides no host-side behavior. */\nexport function apply(): void {}\n"],
+  "mappings": ";AAGO,SAAS,QAAc;AAAC;",
+  "names": []
+}
