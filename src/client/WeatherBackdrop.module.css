@@ -14,8 +14,11 @@
 }
 
 /* The injected SVG fills the backdrop area, anchored to the top-right so
-   the card head stays clear on the left. */
-.backdrop :global(svg) {
+   the card head stays clear on the left. The svg is a plain element
+   selector (CSS Modules hashes only class names), so no :global() wrapper
+   is needed — our esbuild pipeline keeps :global() verbatim, which would
+   make this rule dead in the built bundle. */
+.backdrop svg {
   position: absolute;
   top: -50px;
   right: -22px;
