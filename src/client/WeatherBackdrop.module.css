@@ -17,7 +17,7 @@
    the card head stays clear on the left. */
 .backdrop :global(svg) {
   position: absolute;
-  top: -18px;
+  top: -50px;
   right: -22px;
   width: 168px;
   height: 168px;

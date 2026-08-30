@@ -73,10 +73,115 @@ export const STORMY_SHENZHEN: WeatherScenario = {
   },
 }
 
+export const PARTLY_CLOUDY_HANGZHOU: WeatherScenario = {
+  id: 'partly-cloudy-hangzhou',
+  label: '🌤️ 局部多云 · 杭州',
+  location: { latitude: 30.27, longitude: 120.15, name: '杭州市' },
+  weather: {
+    temperature: 24.5,
+    apparentTemperature: 25.8,
+    humidity: 62,
+    windSpeed: 4.2,
+    weatherCode: 1,
+    time: '2026-08-31T01:00',
+  },
+}
+
+export const CLOUDY_CHENGDU: WeatherScenario = {
+  id: 'cloudy-chengdu',
+  label: '☁️ 多云 · 成都',
+  location: { latitude: 30.57, longitude: 104.06, name: '成都市' },
+  weather: {
+    temperature: 21.0,
+    apparentTemperature: 21.5,
+    humidity: 74,
+    windSpeed: 3.1,
+    weatherCode: 3,
+    time: '2026-08-31T01:00',
+  },
+}
+
+export const FOGGY_CHONGQING: WeatherScenario = {
+  id: 'foggy-chongqing',
+  label: '🌫️ 雾 · 重庆',
+  location: { latitude: 29.56, longitude: 106.55, name: '重庆市' },
+  weather: {
+    temperature: 16.2,
+    apparentTemperature: 16.0,
+    humidity: 95,
+    windSpeed: 1.2,
+    weatherCode: 45,
+    time: '2026-08-31T01:00',
+  },
+}
+
+export const DRIZZLY_NANJING: WeatherScenario = {
+  id: 'drizzly-nanjing',
+  label: '🌦️ 毛毛雨 · 南京',
+  location: { latitude: 32.06, longitude: 118.78, name: '南京市' },
+  weather: {
+    temperature: 17.8,
+    apparentTemperature: 18.2,
+    humidity: 89,
+    windSpeed: 5.4,
+    weatherCode: 53,
+    time: '2026-08-31T01:00',
+  },
+}
+
+export const FREEZING_DRIZZLE_HOHHOT: WeatherScenario = {
+  id: 'freezing-drizzle-hohhot',
+  label: '🌧️❄️ 冻毛毛雨 · 呼和浩特',
+  location: { latitude: 40.84, longitude: 111.75, name: '呼和浩特市' },
+  weather: {
+    temperature: -1.3,
+    apparentTemperature: -5.1,
+    humidity: 86,
+    windSpeed: 11.8,
+    weatherCode: 56,
+    time: '2026-08-31T01:00',
+  },
+}
+
+export const FREEZING_RAIN_CHANGCHUN: WeatherScenario = {
+  id: 'freezing-rain-changchun',
+  label: '🌧️🧊 冻雨 · 长春',
+  location: { latitude: 43.82, longitude: 125.32, name: '长春市' },
+  weather: {
+    temperature: -2.5,
+    apparentTemperature: -7.2,
+    humidity: 90,
+    windSpeed: 14.5,
+    weatherCode: 66,
+    time: '2026-08-31T01:00',
+  },
+}
+
+export const HAIL_GUIYANG: WeatherScenario = {
+  id: 'hail-guiyang',
+  label: '🧊 冰雹 · 贵阳',
+  location: { latitude: 26.65, longitude: 106.63, name: '贵阳市' },
+  weather: {
+    temperature: 14.6,
+    apparentTemperature: 13.9,
+    humidity: 91,
+    windSpeed: 19.3,
+    weatherCode: 96,
+    time: '2026-08-31T01:00',
+  },
+}
+
 export const ALL_SCENARIOS: readonly WeatherScenario[] = [
   SUNNY_BEIJING,
+  PARTLY_CLOUDY_HANGZHOU,
+  CLOUDY_CHENGDU,
+  FOGGY_CHONGQING,
+  DRIZZLY_NANJING,
   RAINY_SHANGHAI,
+  FREEZING_DRIZZLE_HOHHOT,
+  FREEZING_RAIN_CHANGCHUN,
   COLD_HARBIN,
+  HAIL_GUIYANG,
   STORMY_SHENZHEN,
 ]
 

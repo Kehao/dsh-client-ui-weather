@@ -1,3 +1,43 @@
+/* DSW design tokens (--dsw-alias-*) mocked from @deepseek-ai/dsh-client-ui-theme,
+   so the widget looks identical to the real dsh web sidebar. Values are the
+   expanded theme palette (light + dark), kept in sync manually. */
+
+:root {
+  --dsw-alias-bg-base: #ffffff;
+  --dsw-alias-bg-layer-2: #ffffff;
+  --dsw-alias-bg-mask-1: #0000003d;
+  --dsw-alias-bg-overlay: #e9ecf2;
+  --dsw-alias-bg-skeleton: #0000000a;
+  --dsw-alias-border-l2: #0000001a;
+  --dsw-alias-border-l3: #0000001f;
+  --dsw-alias-brand-primary: #0f1115;
+  --dsw-alias-interactive-bg-active: #2631481a;
+  --dsw-alias-interactive-bg-hover: #2631480f;
+  --dsw-alias-label-dimmed: #e1e5ee;
+  --dsw-alias-label-primary: #0f1115;
+  --dsw-alias-label-secondary: #61666b;
+  --dsw-alias-label-tertiary: #81858c;
+  --dsw-alias-state-error-primary: #ec1313;
+}
+
+body[data-ds-dark-theme] {
+  --dsw-alias-bg-base: #151517;
+  --dsw-alias-bg-layer-2: #2c2c2e;
+  --dsw-alias-bg-mask-1: #00000080;
+  --dsw-alias-bg-overlay: #61666b;
+  --dsw-alias-bg-skeleton: #ffffff14;
+  --dsw-alias-border-l2: #ffffff1f;
+  --dsw-alias-border-l3: #ffffff29;
+  --dsw-alias-brand-primary: #f9fafb;
+  --dsw-alias-interactive-bg-active: #ffffff24;
+  --dsw-alias-interactive-bg-hover: #ffffff14;
+  --dsw-alias-label-dimmed: #43454a;
+  --dsw-alias-label-primary: #f9fafb;
+  --dsw-alias-label-secondary: #cfd3d6;
+  --dsw-alias-label-tertiary: #adb2b8;
+  --dsw-alias-state-error-primary: #f25a5a;
+}
+
 /* Playground chrome: control panel and a sidebar-like stage. */
 
 :root {
@@ -55,9 +95,9 @@ body {
 /* A faux sidebar column the card renders into. */
 .stage {
   margin: 24px;
-  border: 1px dashed #c9cdd4;
+  border: 1px solid var(--dsw-alias-border-l2);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--dsw-alias-bg-layer-2);
 }
 
 .stage.wide {
