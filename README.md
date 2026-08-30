@@ -1,5 +1,7 @@
 # dsh-client-ui-weather
 
+English | [中文](README.zh.md)
+
 A local weather card for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web GUI sidebar: browser geolocation with IP fallback, current conditions, and a manual city search — all over the keyless [Open-Meteo](https://open-meteo.com/) API.
 
 ## Features
