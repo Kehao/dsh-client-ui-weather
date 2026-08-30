@@ -87,6 +87,11 @@ await build({
   outfile: 'lib/client.js',
   format: 'cjs',
   platform: 'browser',
+  // CSS Modules inject their <style> tags as module-level side effects;
+  // esbuild's default tree-shaking drops those statements once only the
+  // class-map export is consumed. Keeping every side effect is required for
+  // the injected styles to reach the document.
+  treeShaking: false,
   external: PLATFORM_EXTERNALS,
   plugins: [cssModulesPlugin],
   banner: {
