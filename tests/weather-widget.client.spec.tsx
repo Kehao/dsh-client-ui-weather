@@ -50,7 +50,9 @@ describe('WeatherWidget', () => {
     const fetchWeather = vi.fn().mockResolvedValue(sunny)
     const view = render(<WeatherWidget {...props({ resolveLocation, fetchWeather })} />)
 
-    expect(view.getByText('正在定位…')).toBeTruthy()
+    // Locating state shows a skeleton (aria-hidden) instead of shifting text.
+    expect(view.container.querySelector('[aria-hidden="true"]')).toBeTruthy()
+    expect(view.getByRole('button', { name: '刷新' })).toHaveProperty('disabled', true)
     await act(async () => { await Promise.resolve() })
     expect(resolveLocation).toHaveBeenCalledOnce()
     expect(fetchWeather).toHaveBeenCalledWith(beijing)

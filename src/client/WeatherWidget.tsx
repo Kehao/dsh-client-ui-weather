@@ -4,6 +4,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import type { CurrentWeather, CityResult, WeatherLocation } from './weather-api.ts'
 import { weatherCodeKey } from './weather-code.ts'
 import type { WeatherKey } from './locales.ts'
+import { RefreshIcon, WarningIcon } from './icons.tsx'
 import css from './WeatherWidget.module.css'
 
 /** The inject face: browser-side data access, kept out of the component. */
@@ -86,6 +87,7 @@ export function WeatherWidget({ wide, t, resolveLocation, fetchWeather, searchCi
   }
 
   const ready = state.status === 'ready'
+  const loading = state.status === 'locating'
   const temperature = ready ? Math.round(state.weather.temperature) : undefined
   const description = ready ? t(weatherCodeKey(state.weather.weatherCode)) : undefined
   const place = ready ? (state.location.name ?? t('location.unknown')) : undefined
@@ -100,6 +102,7 @@ export function WeatherWidget({ wide, t, resolveLocation, fetchWeather, searchCi
         className={css.rail}
         aria-label={summary}
         title={summary}
+        disabled={loading}
         onClick={() => { void autoLocate() }}
       >
         {temperature !== undefined ? `${temperature}°` : '—'}
@@ -110,17 +113,28 @@ export function WeatherWidget({ wide, t, resolveLocation, fetchWeather, searchCi
   return (
     <div className={css.card}>
       <div className={css.head}>
-        <span className={css.place}>{ready ? place : t('locating')}</span>
+        <span className={css.place}>
+          {loading ? <span className={css.placeSkeleton} aria-hidden="true" /> : place}
+        </span>
         <button
           type="button"
           className={css.refresh}
           aria-label={t('refresh')}
           title={t('refresh')}
+          disabled={loading}
           onClick={() => { void autoLocate() }}
         >
-          ↻
+          <RefreshIcon size={14} className={loading ? css.refreshSpinning : undefined} />
         </button>
       </div>
+
+      {loading && (
+        <div className={css.skeleton} aria-hidden="true">
+          <span className={css.skeletonTemp} />
+          <span className={css.skeletonLine} />
+          <span className={css.skeletonLine} />
+        </div>
+      )}
 
       {ready && (
         <>
@@ -138,7 +152,8 @@ export function WeatherWidget({ wide, t, resolveLocation, fetchWeather, searchCi
 
       {state.status === 'error' && (
         <div className={css.error} role="alert">
-          <span>{t(state.message)}</span>
+          <WarningIcon size={14} className={css.errorIcon} />
+          <span className={css.errorText}>{t(state.message)}</span>
           <button type="button" className={css.retry} onClick={() => { void autoLocate() }}>
             {t('refresh')}
           </button>
