@@ -90,7 +90,7 @@ await build({
   external: PLATFORM_EXTERNALS,
   plugins: [cssModulesPlugin],
   banner: {
-    js: `window.__ModuleLoader__.load({ id: ${JSON.stringify(PKG)}, factory: (require) => {`,
+    js: `window.__ModuleLoader__.load({ id: ${JSON.stringify(PKG)}, factory: (require) => { var module = { exports: {} }; var exports = module.exports;`,
   },
   footer: {
     js: 'return module.exports; } });',
