@@ -59,10 +59,25 @@ export const COLD_HARBIN: WeatherScenario = {
   },
 }
 
+export const STORMY_SHENZHEN: WeatherScenario = {
+  id: 'stormy-shenzhen',
+  label: '⛈️ 雷暴 · 深圳',
+  location: { latitude: 22.54, longitude: 114.06, name: '深圳市' },
+  weather: {
+    temperature: 27.3,
+    apparentTemperature: 31.5,
+    humidity: 88,
+    windSpeed: 22.6,
+    weatherCode: 95,
+    time: '2026-08-31T00:30',
+  },
+}
+
 export const ALL_SCENARIOS: readonly WeatherScenario[] = [
   SUNNY_BEIJING,
   RAINY_SHANGHAI,
   COLD_HARBIN,
+  STORMY_SHENZHEN,
 ]
 
 /** City search stub mirroring the Open-Meteo geocoding result shape. */

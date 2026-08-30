@@ -1,9 +1,10 @@
 /**
  * ui-weather WMO code mapping: every dictionary key is reachable from the
- * WMO code groups, and unknown codes fall back to the overcast label.
+ * WMO code groups, unknown codes fall back to the overcast label, and each
+ * code group maps to its backdrop animation state.
  */
 import { describe, expect, it } from 'vitest'
-import { weatherCodeKey } from '../src/client/weather-code.ts'
+import { weatherBackdrop, weatherCodeKey } from '../src/client/weather-code.ts'
 import { zh } from '../src/client/locales.ts'
 
 describe('weatherCodeKey', () => {
@@ -55,5 +56,32 @@ describe('weatherCodeKey', () => {
     for (const key of reachable) {
       expect(zh[key]).toBeTypeOf('string')
     }
+  })
+})
+
+describe('weatherBackdrop', () => {
+  it('maps clear-sky codes to sunny', () => {
+    for (const code of [0, 1, 2]) expect(weatherBackdrop(code)).toBe('sunny')
+  })
+
+  it('maps overcast and fog to cloudy', () => {
+    for (const code of [3, 45, 48]) expect(weatherBackdrop(code)).toBe('cloudy')
+  })
+
+  it('maps drizzle and rain to rain', () => {
+    for (const code of [51, 56, 61, 66, 80, 82]) expect(weatherBackdrop(code)).toBe('rain')
+  })
+
+  it('maps snow and snow showers to snow', () => {
+    for (const code of [71, 77, 85, 86]) expect(weatherBackdrop(code)).toBe('snow')
+  })
+
+  it('maps thunderstorms to storm', () => {
+    for (const code of [95, 96, 99]) expect(weatherBackdrop(code)).toBe('storm')
+  })
+
+  it('falls back to storm for unknown codes', () => {
+    expect(weatherBackdrop(-1)).toBe('storm')
+    expect(weatherBackdrop(100)).toBe('storm')
   })
 })

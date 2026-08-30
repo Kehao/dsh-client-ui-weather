@@ -28,3 +28,21 @@ export function weatherCodeKey(code: number): WeatherKey {
   if (code === 96 || code === 99) return 'code.thunderstormHail'
   return 'code.overcast'
 }
+
+/** Backdrop animation state derived from a WMO code. */
+export type WeatherBackdrop = 'sunny' | 'cloudy' | 'rain' | 'snow' | 'storm'
+
+/**
+ * Map a WMO weather interpretation code to its backdrop animation state.
+ * @param code - the WMO code reported by Open-Meteo.
+ * @returns the animation state for the card background.
+ */
+export function weatherBackdrop(code: number): WeatherBackdrop {
+  if (code === 0 || code === 1 || code === 2) return 'sunny'
+  if (code === 3 || code === 45 || code === 48) return 'cloudy'
+  if (code >= 51 && code <= 67) return 'rain'
+  if (code >= 71 && code <= 77) return 'snow'
+  if (code >= 80 && code <= 82) return 'rain'
+  if (code >= 85 && code <= 86) return 'snow'
+  return 'storm'
+}

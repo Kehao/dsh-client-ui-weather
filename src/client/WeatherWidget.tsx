@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 import type { CurrentWeather, CityResult, WeatherLocation } from './weather-api.ts'
-import { weatherCodeKey } from './weather-code.ts'
+import { weatherBackdrop, weatherCodeKey } from './weather-code.ts'
 import type { WeatherKey } from './locales.ts'
 import { RefreshIcon, WarningIcon } from './icons.tsx'
+import { WeatherBackdrop } from './WeatherBackdrop.tsx'
 import css from './WeatherWidget.module.css'
 
 /** The inject face: browser-side data access, kept out of the component. */
@@ -112,83 +113,86 @@ export function WeatherWidget({ wide, t, resolveLocation, fetchWeather, searchCi
 
   return (
     <div className={css.card}>
-      <div className={css.head}>
-        <span className={css.place}>
-          {loading ? <span className={css.placeSkeleton} aria-hidden="true" /> : place}
-        </span>
-        <button
-          type="button"
-          className={css.refresh}
-          aria-label={t('refresh')}
-          title={t('refresh')}
-          disabled={loading}
-          onClick={() => { void autoLocate() }}
-        >
-          <RefreshIcon size={14} className={loading ? css.refreshSpinning : undefined} />
-        </button>
-      </div>
-
-      {loading && (
-        <div className={css.skeleton} aria-hidden="true">
-          <span className={css.skeletonTemp} />
-          <span className={css.skeletonLine} />
-          <span className={css.skeletonLine} />
-        </div>
-      )}
-
-      {ready && (
-        <>
-          <div className={css.main}>
-            <span className={css.temp}>{temperature}°</span>
-            <span className={css.desc}>{description}</span>
-          </div>
-          <div className={css.details}>
-            <span>{t('feelsLike', { temp: Math.round(state.weather.apparentTemperature) })}</span>
-            <span>{t('humidity', { value: state.weather.humidity })}</span>
-            <span>{t('wind', { value: Math.round(state.weather.windSpeed) })}</span>
-          </div>
-        </>
-      )}
-
-      {state.status === 'error' && (
-        <div className={css.error} role="alert">
-          <WarningIcon size={14} className={css.errorIcon} />
-          <span className={css.errorText}>{t(state.message)}</span>
-          <button type="button" className={css.retry} onClick={() => { void autoLocate() }}>
-            {t('refresh')}
+      {ready && <WeatherBackdrop state={weatherBackdrop(state.weather.weatherCode)} />}
+      <div className={css.body}>
+        <div className={css.head}>
+          <span className={css.place}>
+            {loading ? <span className={css.placeSkeleton} aria-hidden="true" /> : place}
+          </span>
+          <button
+            type="button"
+            className={css.refresh}
+            aria-label={t('refresh')}
+            title={t('refresh')}
+            disabled={loading}
+            onClick={() => { void autoLocate() }}
+          >
+            <RefreshIcon size={14} className={loading ? css.refreshSpinning : undefined} />
           </button>
         </div>
-      )}
 
-      <div className={css.search}>
-        <input
-          className={css.searchInput}
-          value={query}
-          placeholder={t('search.placeholder')}
-          aria-label={t('search.placeholder')}
-          onChange={(event) => { setQuery(event.target.value); setMatches([]) }}
-          onKeyDown={(event) => { if (event.key === 'Enter') void runSearch() }}
-        />
-        {searching && <span className={css.searching}>{t('locating')}</span>}
-        {!searching && matches.length > 0 && (
-          <ul className={css.matches}>
-            {matches.map(city => (
-              <li key={city.id}>
-                <button
-                  type="button"
-                  className={css.match}
-                  onClick={() => { void selectCity(city) }}
-                >
-                  {city.name}{city.admin1 !== undefined ? ` · ${city.admin1}` : ''}
-                  {city.country !== undefined ? ` · ${city.country}` : ''}
-                </button>
-              </li>
-            ))}
-          </ul>
+        {loading && (
+          <div className={css.skeleton} aria-hidden="true">
+            <span className={css.skeletonTemp} />
+            <span className={css.skeletonLine} />
+            <span className={css.skeletonLine} />
+          </div>
         )}
-        {!searching && matches.length === 0 && query.trim().length > 0 && (
-          <div className={css.noMatches}>{t('search.empty')}</div>
+
+        {ready && (
+          <>
+            <div className={css.main}>
+              <span className={css.temp}>{temperature}°</span>
+              <span className={css.desc}>{description}</span>
+            </div>
+            <div className={css.details}>
+              <span>{t('feelsLike', { temp: Math.round(state.weather.apparentTemperature) })}</span>
+              <span>{t('humidity', { value: state.weather.humidity })}</span>
+              <span>{t('wind', { value: Math.round(state.weather.windSpeed) })}</span>
+            </div>
+          </>
         )}
+
+        {state.status === 'error' && (
+          <div className={css.error} role="alert">
+            <WarningIcon size={14} className={css.errorIcon} />
+            <span className={css.errorText}>{t(state.message)}</span>
+            <button type="button" className={css.retry} onClick={() => { void autoLocate() }}>
+              {t('refresh')}
+            </button>
+          </div>
+        )}
+
+        <div className={css.search}>
+          <input
+            className={css.searchInput}
+            value={query}
+            placeholder={t('search.placeholder')}
+            aria-label={t('search.placeholder')}
+            onChange={(event) => { setQuery(event.target.value); setMatches([]) }}
+            onKeyDown={(event) => { if (event.key === 'Enter') void runSearch() }}
+          />
+          {searching && <span className={css.searching}>{t('locating')}</span>}
+          {!searching && matches.length > 0 && (
+            <ul className={css.matches}>
+              {matches.map(city => (
+                <li key={city.id}>
+                  <button
+                    type="button"
+                    className={css.match}
+                    onClick={() => { void selectCity(city) }}
+                  >
+                    {city.name}{city.admin1 !== undefined ? ` · ${city.admin1}` : ''}
+                    {city.country !== undefined ? ` · ${city.country}` : ''}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          {!searching && matches.length === 0 && query.trim().length > 0 && (
+            <div className={css.noMatches}>{t('search.empty')}</div>
+          )}
+        </div>
       </div>
     </div>
   )
