@@ -40,6 +40,12 @@
   color: var(--dsw-alias-label-secondary);
 }
 
+/* In the sunny backdrop the sun sits at the top-left; keep the location
+   name clear of it. */
+.placeWithSun {
+  padding-left: 48px;
+}
+
 /* Loading placeholder for the location name: keeps the header height stable
    while locating, so the ready state does not shift the layout. */
 .placeSkeleton {

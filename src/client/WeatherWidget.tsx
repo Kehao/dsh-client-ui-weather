@@ -92,6 +92,7 @@ export function WeatherWidget({ wide, t, resolveLocation, fetchWeather, searchCi
   const temperature = ready ? Math.round(state.weather.temperature) : undefined
   const description = ready ? t(weatherCodeKey(state.weather.weatherCode)) : undefined
   const place = ready ? (state.location.name ?? t('location.unknown')) : undefined
+  const backdropState = ready ? weatherBackdrop(state.weather.weatherCode) : undefined
   const summary = ready
     ? `${place} ${temperature}° ${description}`
     : t('locating')
@@ -113,10 +114,10 @@ export function WeatherWidget({ wide, t, resolveLocation, fetchWeather, searchCi
 
   return (
     <div className={css.card}>
-      {ready && <WeatherBackdrop state={weatherBackdrop(state.weather.weatherCode)} />}
+      {ready && backdropState !== undefined && <WeatherBackdrop state={backdropState} />}
       <div className={css.body}>
         <div className={css.head}>
-          <span className={css.place}>
+          <span className={`${css.place}${backdropState === 'sunny' ? ` ${css.placeWithSun}` : ''}`}>
             {loading ? <span className={css.placeSkeleton} aria-hidden="true" /> : place}
           </span>
           <button
