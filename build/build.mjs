@@ -21,9 +21,17 @@ const PLATFORM_EXTERNALS = [
   '@deepseek-ai/dsh-client-store', '@deepseek-ai/dsh-client-ui-slots', '@deepseek-ai/dsh-client-ui-primitives',
 ]
 
-/** Hash one CSS Modules local class into a stable browser class name. */
+/** Hash one CSS Modules local class into a stable browser class name.
+ *  A CSS class selector must be a valid CSS identifier — it cannot start
+ *  with a digit (`.123abc` is invalid, the rule gets dropped). The hex hash
+ *  starts with a digit ~62.5% of the time, which silently killed most
+ *  rules in the dsh host (Vite avoids this by prefixing its classes with
+ *  an underscore). Prefix the hash with `_` when it starts with a digit so
+ *  the emitted selector is always valid. */
 function hashClass(path, local) {
-  return `${createHash('sha256').update(`${path}:${local}`).digest('hex').slice(0, 8)}_${local}`
+  let hash = createHash('sha256').update(`${path}:${local}`).digest('hex').slice(0, 8)
+  if (/^[0-9]/.test(hash)) hash = `_${hash}`
+  return `${hash}_${local}`
 }
 
 /** Inline `*.module.css` as a JS module exporting the class map. */
