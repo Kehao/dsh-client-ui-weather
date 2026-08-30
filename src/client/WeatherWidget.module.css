@@ -229,8 +229,11 @@
   left: 0;
   right: 0;
   bottom: calc(100% + 2px);
+  box-sizing: border-box;
   margin: 0;
   padding: 6px;
+  max-height: 90px;
+  overflow-y: auto;
   border-radius: 6px;
   background: var(--dsw-alias-bg-overlay);
   box-shadow: 0 4px 16px var(--dsw-alias-bg-mask-1);
